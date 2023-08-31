@@ -1,0 +1,7 @@
+.App {
+	text-align: center;
+}
+.errorLabel {
+	white-space: pre-line;
+	color: red;
+}

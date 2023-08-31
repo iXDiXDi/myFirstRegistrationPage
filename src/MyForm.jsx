@@ -1,88 +1,85 @@
-import { useState } from 'react';
-
-const sendFormData = (formData) => {
-	console.log(formData);
-};
+import { useState, useRef } from 'react';
+import styles from './app.module.css';
 
 export const MyForm = () => {
-	const [formData, setformData] = useState({
-		email: '',
-		password: '',
-		passwordRepeat: '',
-	});
+	let error = null;
 
-	const [formError, setFormError] = useState(null);
+	const [email, setEmail] = useState('');
 
-	let newError = null;
+	const [emailError, setEmailError] = useState(null);
+
+	const [password, setPassword] = useState('');
+
+	const [redeemPassword, setRedeemPassword] = useState('');
+
+	const submitButtonRef = useRef(null);
 
 	const onEmailChange = ({ target }) => {
-		setformData(target.value);
+		setEmail(target.value);
+
+		let error = null;
 
 		if (!/.+@.+\..+/i.test(target.value)) {
-			newError = `Какой то подозрительный E-mail. \n Проверьте ещё раз или попробуйте использовать другой \n (Возможно в адресе не хватает "@" и/или ".")`;
+			error = `Какой то подозрительный E-mail. \n Проверьте ещё раз или попробуйте использовать другой \n (Возможно в адресе не хватает "@" и/или ".")`;
 		} else if (target.value.length > 20) {
-			newError = 'Слишком длинный E-mail. Не должен быть больше 20 символов';
+			error = 'Слишком длинный E-mail. Не должен быть больше 20 символов';
 		}
-		setFormError(newError);
+		setEmailError(error);
 	};
 
-	const onEmailBlur = ({ target }) => {
-		if (target.value.length < 3) {
-			newError = 'Слишком мало - надо больше 3х';
+	const onEmailBlur = () => {
+		if (email.length < 3) {
+			setEmailError('Email должен быть больше 3 символов');
 		}
-		setFormError(newError);
 	};
 
 	const onPasswordChange = ({ target }) => {
-		setformData(target.value);
+		setPassword(target.value);
 
 		if (target.value.length < 8) {
-			newError = 'Пароль должен быть 8 или больше символов';
+			error = 'Слишком короткий пароль. Должен быть не менее 8 символов';
 		}
-		setFormError(newError);
+		setEmailError(error);
 	};
 
-	const onPasswordBlur = ({ target }) => {
+	const onPasswordBlur = () => {
+		if (password.length < 3) {
+			error = 'Слишком короткий пароль. Должен быть не мене 8 символов';
+		}
+		setEmailError(error);
+	};
+
+	const onRedeemPasswordChange = ({ target }) => {
+		setRedeemPassword(target.value);
+		console.log('target.value', target.value);
+		console.log('redeemPassword', redeemPassword);
 		if (target.value.length < 8) {
-			newError = 'Пароль должен быть 8 или больше символов';
+			error = 'Слишком короткий пароль. Должен быть не менее 8 символов';
 		}
-		setFormError(newError);
+		setEmailError(error);
+
+		if (password === redeemPassword) {
+			submitButtonRef.current.focus();
+		}
 	};
 
-	const onPasswordRepeatChange = ({ target }) => {
-		setformData(target.value);
-
-		if (target.value.length < 8) {
-			newError = 'Пароль должен быть 8 или больше символов';
+	const onRedeemPasswordBlur = () => {
+		if (redeemPassword.length < 8) {
+			error = 'Слишком короткий пароль. Должен быть не мене 8 символов';
 		}
-		setFormError(newError);
+		setEmailError(error);
 	};
-
-	const onPasswordRepeatBlur = ({ target }) => {
-		if (target.value.length < 8) {
-			newError = 'Пароль должен быть 8 или больше символов';
-		}
-		setFormError(newError);
-	};
-
-	if (!(formData.password === formData.passwordRepeat)) {
-		newError = 'Пароли не совпадают';
-		setFormError(newError);
-	}
 
 	const onSubmit = (event) => {
 		event.preventDefault();
-		sendFormData(formData);
+		console.log(email, password, redeemPassword);
 	};
-
-	const { email, password, passwordRepeat } = formData;
 
 	return (
 		<>
-			<div className="registrationForm">
+			<div className={styles.app}>
 				<div>
 					<form onSubmit={onSubmit}>
-						{formError && <div className="error-message">{formError}</div>}
 						<input
 							name="email"
 							type="email"
@@ -91,7 +88,6 @@ export const MyForm = () => {
 							onChange={onEmailChange}
 							onBlur={onEmailBlur}
 						></input>
-						<br></br>
 						<input
 							name="password"
 							type="password"
@@ -100,17 +96,25 @@ export const MyForm = () => {
 							onChange={onPasswordChange}
 							onBlur={onPasswordBlur}
 						></input>
-						<br></br>
 						<input
 							name="password"
 							type="password"
 							placeholder="Повторите пароль"
-							value={passwordRepeat}
-							onChange={onPasswordRepeatChange}
-							onBlur={onPasswordRepeatBlur}
+							value={redeemPassword}
+							onChange={onRedeemPasswordChange}
+							onBlur={onRedeemPasswordBlur}
 						></input>
-						<br></br>
-						<button type="submit">Зарегистрироваться</button>
+
+						<button
+							ref={submitButtonRef}
+							type="submit"
+							disabled={emailError !== null}
+						>
+							Зарегистрироваться
+						</button>
+						{emailError && (
+							<div className={styles.errorLabel}>{emailError}</div>
+						)}
 					</form>
 				</div>
 			</div>

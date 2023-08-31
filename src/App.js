@@ -1,12 +1,10 @@
-import logo from './logo.svg';
-import './App.css';
+import styles from './app.module.css';
 import { MyForm } from './MyForm';
 
 export const App = () => {
 	return (
-		<div className="App">
+		<div className={styles.App}>
 			<header className="App-header">
-				<img src={logo} className="App-logo" alt="logo" />
 				<MyForm />
 			</header>
 		</div>

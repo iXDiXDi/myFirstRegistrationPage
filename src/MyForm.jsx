@@ -11,26 +11,64 @@ export const MyForm = () => {
 		passwordRepeat: '',
 	});
 
-	const [loginError, setloginError] = useState(null);
+	const [formError, setFormError] = useState(null);
 
-	const onLoginChange = ({ target }) => {
+	let newError = null;
+
+	const onEmailChange = ({ target }) => {
 		setformData(target.value);
 
-		let newError = null;
-
-		if (!/^[\w_]*$/.test(target.value)) {
-			newError = 'Ошибка в e-mail. Недопустимые символы';
+		if (!/.+@.+\..+/i.test(target.value)) {
+			newError = `Какой то подозрительный E-mail. \n Проверьте ещё раз или попробуйте использовать другой \n (Возможно в адресе не хватает "@" и/или ".")`;
 		} else if (target.value.length > 20) {
-			newError = 'Ошибка в логине. Слишком много букафф';
+			newError = 'Слишком длинный E-mail. Не должен быть больше 20 символов';
 		}
-		setloginError(newError);
+		setFormError(newError);
 	};
 
-	const onLoginBlur = ({ target }) => {
+	const onEmailBlur = ({ target }) => {
 		if (target.value.length < 3) {
-			setloginError('Слишком мало - надо больше 3х');
+			newError = 'Слишком мало - надо больше 3х';
 		}
+		setFormError(newError);
 	};
+
+	const onPasswordChange = ({ target }) => {
+		setformData(target.value);
+
+		if (target.value.length < 8) {
+			newError = 'Пароль должен быть 8 или больше символов';
+		}
+		setFormError(newError);
+	};
+
+	const onPasswordBlur = ({ target }) => {
+		if (target.value.length < 8) {
+			newError = 'Пароль должен быть 8 или больше символов';
+		}
+		setFormError(newError);
+	};
+
+	const onPasswordRepeatChange = ({ target }) => {
+		setformData(target.value);
+
+		if (target.value.length < 8) {
+			newError = 'Пароль должен быть 8 или больше символов';
+		}
+		setFormError(newError);
+	};
+
+	const onPasswordRepeatBlur = ({ target }) => {
+		if (target.value.length < 8) {
+			newError = 'Пароль должен быть 8 или больше символов';
+		}
+		setFormError(newError);
+	};
+
+	if (!(formData.password === formData.passwordRepeat)) {
+		newError = 'Пароли не совпадают';
+		setFormError(newError);
+	}
 
 	const onSubmit = (event) => {
 		event.preventDefault();
@@ -38,21 +76,20 @@ export const MyForm = () => {
 	};
 
 	const { email, password, passwordRepeat } = formData;
+
 	return (
 		<>
 			<div className="registrationForm">
 				<div>
 					<form onSubmit={onSubmit}>
-						{loginError && (
-							<div className={StyleSheet.errorLabel}>{loginError}</div>
-						)}
+						{formError && <div className="error-message">{formError}</div>}
 						<input
-							name="login"
+							name="email"
 							type="email"
 							placeholder="Ваш E-Mail"
 							value={email}
-							onChange={onLoginChange}
-							onBlur={onLoginBlur}
+							onChange={onEmailChange}
+							onBlur={onEmailBlur}
 						></input>
 						<br></br>
 						<input
@@ -60,8 +97,8 @@ export const MyForm = () => {
 							type="password"
 							placeholder="Пароль"
 							value={password}
-							onChange={onLoginChange}
-							onBlur={onLoginBlur}
+							onChange={onPasswordChange}
+							onBlur={onPasswordBlur}
 						></input>
 						<br></br>
 						<input
@@ -69,8 +106,8 @@ export const MyForm = () => {
 							type="password"
 							placeholder="Повторите пароль"
 							value={passwordRepeat}
-							onChange={onLoginChange}
-							onBlur={onLoginBlur}
+							onChange={onPasswordRepeatChange}
+							onBlur={onPasswordRepeatBlur}
 						></input>
 						<br></br>
 						<button type="submit">Зарегистрироваться</button>
